@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block content %}
+
+<style>
+    .title-font {font-size: 1.5rem;}
+    .small-title-font {font-size: 1.1rem !important;}
+    img { margin: 20px 20px;}
+    </style>
+
+<div class="container my-5">
+    <h1 class="mb-5 text-center"><strong>MOVz 추천 영화</strong></h1>
+    
+    <table class="table table-hover align-middle">
+        
+        <thead class="text-center align-middle">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for genre, movie in top_genre_movies.items %}
+            {% if movie %}
+            <tr>
+                <td class="td-mainphoto text-center fs-4" style="width: 35%;">
+                    <a href="{% url 'movie:genre' %}?fields=genre1&kw={{ genre }}">
+                        {% if movie.mainphoto and movie.mainphoto.url %}
+                        <img src="{{ movie.mainphoto.url }}" 
+                             alt="{{ movie.m_name }} 포스터" title="{{ genre }} 영화 더보기"
+                             height="150" width="100" 
+                             onerror="this.style.display='none'">
+                        {% else %}
+                        <img src="{% static 'img/no_image.png' %}" alt="no image">
+                        {% endif %}
+                    </a>
+                </td>
+
+                <td class="td-genre text-center fs-4"><strong class="movie-title">{{ genre }}</strong></td>
+
+                <td class="td-movie text-center">
+                    {% with length=movie.m_name|length %}
+                    <span class="fw-bold text-center title-font {% if length > 10 %}small-title-font{% endif %}" >
+                        <a class="movie-title" href="{% url 'movie:genre' %}?fields=genre1&kw={{ genre }}" 
+                            title="{{ genre }} 영화 더보기" style="text-decoration: none; color: black;">
+                            <strong>{{ movie.m_name }}</strong>
+                        </a>
+                    </span>
+                    {% endwith %}
+                  <p class="movie-vote mt-2" style="font-size: 17px;">({{ movie.m_date }}) ♥ {{ movie.vote }}</p>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="text-center" >{{ genre }}</td>
+                <td colspan="3" class="text-center text-muted">등록된 **{{ genre }}** 장르의 대표 영화가 없습니다.</td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+
+        {% if not top_genre_movies %}
+        <tr>
+            <td colspan="3" class="text-center text-danger">추천할 장르 정보가 없습니다.</td> 
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+table {
+  width: 100%;
+  table-layout: auto;  /* 자동 레이아웃 */
+  word-break: keep-all;
+}
+.movie-title {
+  font-weight: bold;
+  font-size: clamp(1.2rem, 2vw, 2.2rem); /* 화면 크기에 따라 자동 조절 */
+  line-height: 1.3;
+  word-break: keep-all;
+  white-space: normal; /* 줄바꿈 허용 */
+  overflow: visible;   /* 숨기지 않음 */
+  text-overflow: clip; /* ... 안 붙임 */
+  transition: font-size 0.3s ease;
+}
+
+/* 감독 — 반응형 크기 + 1줄 제한 */
+.movie-director {
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  color: #222; /* 제목보다는 연하지만 cast보단 진하게 */
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* 한 줄까지만 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  
+  word-break: keep-all;
+  transition: font-size 0.3s ease;
+}
+
+/* detail.html의 review 내용 없이 리뷰 등록 시 뜨는 에러 창 */
+.movie_review_error {width: 90%; margin: 0 auto;}

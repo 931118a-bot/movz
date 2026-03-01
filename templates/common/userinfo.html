@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <h2 class="mb-4">내 정보</h2>
+
+            <ul class="list-group mb-4">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    ID
+                    <span class="fw-bold">{{ user.username }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    이메일
+                    <span class="fw-bold">{{ user.email }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    가입일
+                    <span class="fw-bold">{{ user.date_joined|date:"Y년 m월 d일" }}</span>
+                </li>
+                {% if profile %}
+                <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary mt-3">
+                    이름
+                    <span class="fw-bold">{{ profile.name }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-secondary">
+                    전화번호
+                    <span class="fw-bold">{{ profile.phone }}</span>
+                </li>
+                {% else %}
+                <li class="list-group-item list-group-item-danger mt-3">프로필 정보가 없습니다.</li>
+                {% endif %}
+            </ul>
+
+            <div class="d-flex justify-content-between">
+                {% with referer=request.META.HTTP_REFERER %}
+                    {% if referer and referer != request.get_full_path %}
+                        <a href="{{ referer }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> 돌아가기
+                        </a>
+                    {% else %}
+                        <a href="{% url 'index' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> 돌아가기
+                        </a>
+                    {% endif %}
+                {% endwith %}
+
+                <a href="{% url 'common:user_modify' %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> 내정보 수정
+                </a>
+            </div>
+            <div class="mt-4 text-center">
+                <a href="{% url 'common:usercheck' %}" class="btn btn-link text-danger">
+                    회원 탈퇴
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

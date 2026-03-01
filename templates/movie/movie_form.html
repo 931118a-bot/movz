@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="margin-top: -60; margin-bottom: 50;">
+    <h3 class="border-bottom pb-3">영화 등록/수정</h3>
+    <form method="post" enctype="multipart/form-data">
+
+        {% csrf_token %}
+
+        <!-- 오류 표시 -->
+        {% if form.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for field in form %}
+            {% if field.errors %}
+            <div>
+                <strong>{{ field.label }}</strong> {{ field.errors }}
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- 영화명 -->
+        <div class="mb-3">
+            <label for="m_name" class="form-label">영화명</label>
+            <input type="text" class="form-control" name="m_name" id="m_name"
+                   value="{{ form.m_name.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 감독 -->
+        <div class="mb-3">
+            <label for="director" class="form-label">감독</label>
+            <input type="text" class="form-control" name="director" id="director"
+                   value="{{ form.director.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 출연진 -->
+        <div class="mb-3">
+            <label for="cast" class="form-label">출연진</label>
+            <input type="text" class="form-control" name="cast" id="cast"
+                   value="{{ form.cast.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 줄거리 -->
+        <div class="mb-3">
+            <label for="story" class="form-label">줄거리</label>
+            <textarea class="form-control" name="story" id="story" rows="6" style="resize: none">{{ form.story.value|default_if_none:'' }}</textarea>
+        </div>
+
+        <!-- 상영시간 -->
+        <div class="mb-3">
+            <label for="runtime" class="form-label">상영시간(분)</label>
+            <input type="number" class="form-control" name="runtime" id="runtime"
+                   value="{{ form.runtime.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 개봉년도 -->
+        <div class="mb-3">
+            <label for="m_date" class="form-label">개봉년도</label>
+            <input type="number" class="form-control" name="m_date" id="m_date"
+                   value="{{ form.m_date.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 장르 -->
+        <div class="mb-3">
+            <label for="genre1" class="form-label">장르</label>
+            <input type="text" class="form-control" name="genre1" id="genre1"
+                value="{{ form.genre1.value|default_if_none:'' }}">
+        </div>
+
+        <!-- 관람등급 -->
+        <div class="mb-3">
+            <label for="m_age" class="form-label">이용등급</label>
+            <input type="text" class="form-control" name="m_age" id="m_age"
+                   value="{{ form.m_age.value|default_if_none:'' }}">
+        </div>
+        
+        <!-- 이미지 추가 -->
+        <div class="mb-3">
+            <input type="file"   name="mainphoto" id="mainphoto" accept="image/*">            
+        </div>
+        
+        <div style="margin-bottom: -15;">
+        <button style="margin-right: 5px;" type="submit" class="btn btn-primary">저장하기</button>
+        <a href="{% if request.GET.next %}{{ request.GET.next }}{% else %}/movie/{{ form.instance.id }}{% endif %}">
+        <button type="button" class="btn btn-primary">취소하기</button></a>
+        </div>
+    </form>
+</div>
+{% endblock %}

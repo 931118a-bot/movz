@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<!--리뷰 수정-->
+<div class="container" style="margin-top: -50px;">
+    <form method="post">
+        {% csrf_token %}
+        {% include "form_errors.html" %}
+        <div class="mb-3">
+            <label for="comment" class="form-label pb-1" style="font-size: 1.5rem;"><strong>리뷰내용</strong></label>
+            <textarea class="form-control" name="comment"  id="comment"  rows="10"  maxlength="300"  
+            placeholder="최대 300자까지 입력 가능합니다."  style="resize:none;">{{ form.comment.value|default_if_none:'' }}</textarea>
+        </div>
+          <button type="submit" class="btn btn-primary">저장하기</button>
+          <button type="button" class="btn btn-primary" onclick="history.back()">취소하기</button>
+    </form>
+</div>
+{% endblock %}

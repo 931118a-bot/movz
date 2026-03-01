@@ -1,0 +1,120 @@
+{% load static %}
+
+<style>
+  /* 기본 텍스트 스타일 */
+  .title-font { font-size: 1.5rem; }
+  .small-title-font { font-size: 1.2rem !important; }
+  .movie_list { text-decoration: none; font-weight: bold; color: black; }
+
+  /* 테이블 전체 */
+  .recommend-table {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    text-align: center;
+    table-layout: fixed; /* 균등 비율 유지 */
+  }
+
+  .recommend-table td {
+    vertical-align: middle;
+    padding: 16px 8px;
+    word-break: keep-all;
+  }
+
+  /* 포스터 이미지 */
+  .poster-box {
+    width: 100px;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 0; 
+    margin: 10 auto;
+  }
+
+  .poster-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0; 
+  }
+
+  /* 관람가 텍스트 (반응형 한 줄 유지) */
+  .age-col {font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+  @media (max-width: 992px) {
+    .poster-box { width: 80px; }
+    .title-font { font-size: 1.3rem; }
+    .recommend-table td { padding: 10px 4px; }
+    .age-col { font-size: 17px; }
+  }
+
+  @media (max-width: 768px) {
+    .recommend-table {width: 100%; max-width: 100%; margin: 0 auto; }
+    .poster-box { width: 65px; }
+    .title-font { font-size: 1.1rem; }
+    .recommend-table td { padding: 6px 3px; word-wrap: break-word; }
+    .recommend-table tr { display: table-row; }
+    .age-col {font-size: 15px; }
+  }
+
+  @media (max-width: 480px) { 
+    .poster-box { width: 55px; }
+    .recommend-table td {padding: 4px 2px; font-size: 0.9rem;}
+    .age-col { font-size: 13px;}
+  }
+</style>
+
+<div class="container my-5 text-center">
+  <h1 class="mb-4 text-center"><strong>{{ movie.genre1 }} 영화 추천</strong></h1>
+
+  {% if related_movies %}
+  <div style="display:flex; justify-content:center;">
+  <table class="table table-hover align-middle recommend-table">
+    {% for related_movie in related_movies %}
+    <tr>
+      <!-- 포스터 -->
+      <td style="width: 25%;">
+        <a href="/movie/{{ related_movie.id }}/">
+          <div class="poster-box">
+            {% if related_movie.mainphoto %}
+              <img src="/media/{{ related_movie.mainphoto }}/"
+                   alt="{{ related_movie.m_name }} 포스터"
+                   title="{{ related_movie }} 영화 더보기"
+                   onerror="this.style.display='none'">
+            {% else %}
+              <img src="{% static 'img/no_image.png' %}" alt="no image">
+            {% endif %}
+          </div>
+        </a>
+      </td>
+
+      <!-- 관람가 -->
+      <td class="age-col" style="width: 30%;">
+        {% if related_movie.m_age == "all" %}
+          <strong>전체관람가</strong>
+        {% else %}
+          <strong>{{ related_movie.m_age }}세 이용가</strong>
+        {% endif %}
+      </td>
+
+      <!-- 영화 이름 -->
+      <td style="width: 45%;">
+        {% with length=related_movie.m_name|length %}
+        <span class="fw-bold title-font {% if length > 10 %}small-title-font{% endif %}">
+          <a class="movie_list" href="/movie/{{ related_movie.id }}/"
+             title="{{ related_movie.genre1 }} 장르 영화 더보기">
+             {{ related_movie.m_name }}
+          </a>
+        </span>
+        {% endwith %}
+        <p style="margin-top: 10px; font-size: 18px;">({{ related_movie.m_date }}) ♥ {{ related_movie.vote }}</p>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+  {% else %}
+  <p class="text-center text-muted">같은 장르의 다른 인기 영화가 없습니다.</p>
+  {% endif %}
+</div>

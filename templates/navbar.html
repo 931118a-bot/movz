@@ -1,0 +1,95 @@
+<style>
+   #btn_search {
+  display: inline-block;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  border: 1px solid black;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0 6px 6px 0; 
+  background-color: white;
+  color: black;
+  transition: background-color 0.2s ease;
+}
+  #btn_search:hover {background-color: #f1f1f1;}
+  .navbar { z-index: 1050 !important; }
+  .search-bar-fixed { position: fixed; width: 100%; top: 110px; left: 0; right: 0; z-index: 1030; background-color: #6c757d; padding: 20px 0 6px 0;}
+  </style>
+<!-- 네비게이션바 -->
+<nav class="navbar navbar-expand-sm bg-secondary navbar-dark fixed-top py-3" style="padding: 30px 20px;">
+  <div class="container-fluid">
+    <ul class="navbar-nav me-auto">
+      <li>
+        <a class="nav-link fw-bold" href="{% url 'movie:index' %}" 
+            title="첫 화면으로 돌아가기" style="color: white; font-size: 50px;">MOVz</a>
+      </li>
+    </ul>
+
+    <button class="navbar-toggler ms-auto"  type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+<!-- 로그인 / 회원 -->
+<ul class="navbar-nav ms-auto text-end">
+        <li class="nav-item">
+          {% if user.is_superuser%}
+          <li><a class="nav-link fs-4" style="color: white;">admin 님</a></li>
+          {% elif user.is_authenticated %}
+          <li><a class="nav-link fs-4" href="{% url 'common:userinfo' %}" title="내 정보 확인" style="color: white;">{{ user.username }} 님</a></li>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+          <a class="nav-link fs-4" href="{% url 'common:logout' %}?next={{ request.get_full_path|urlencode }}" title="로그아웃" style="color: white;">
+          로그아웃
+          </a>
+          {% else %}
+          <a class="nav-link fs-4" href="{% url 'common:login' %}?next={{ request.get_full_path|urlencode }}" title="로그인" style="color: white;">로그인</a>
+          {% endif %}
+        </li>
+
+        {% if not user.is_authenticated %}
+        <li><a class="nav-link fs-4" href="{% url 'common:signup' %}?next={{ request.get_full_path|urlencode }}" title="회원가입" style="color: white;">회원가입</a></li>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <li><a href="{% url 'movie:movie_create' %}" class="nav-link fs-4" style="color: white">영화 등록</a></li>
+        {% endif %}
+      </ul>
+</nav>
+
+{% if show_search %}
+<div class="position-fixed w-100"
+     style="top: 110px; left: 0; right: 0;
+            z-index: 1030; background-color: #6c757d;
+            padding: 20px 0 6px 0;     ">
+            <!--  box-shadow: 0 2px 5px rgba(0,0,0,0.1);"> "    중간선 -->
+  
+    <div class="mx-auto" style="width: 85%; max-width: 700px;">  <!-- 검색창 길이 조정 -->
+    <form id="searchForm" method="get" action="{% url 'movie:search' %}" 
+          onsubmit="document.getElementById('page').value = 1;">
+      <div class="input-group">
+        <select class="form-select border-dark" id="fieldInput" name="fields" style="max-width: 90px;">
+          <option value="m_name" {% if selected_field == 'm_name' or not selected_field %}selected{% endif %}>영화</option>
+          <option value="director" {% if selected_field == 'director' %}selected{% endif %}>감독</option>
+          <option value="cast" {% if selected_field == 'cast' %}selected{% endif %}>배우</option>
+          <option value="genre1" {% if selected_field == 'genre1' %}selected{% endif %}>장르</option>
+        </select>
+
+        <input type="text" id="search_kw" name="kw" class="form-control"
+               style="border-color: black; height: 50px; font-size: 15px; " 
+               placeholder="검색어를 입력해 주세요"
+               value="{{ kw|default_if_none:'' }}">
+        <input type="hidden" id="page" name="page" value="{{ page|default_if_none:'1' }}">
+
+        <button type="submit" id="btn_search" style="border-color: black; color:black;">⌕</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}

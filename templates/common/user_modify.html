@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">내 정보 수정</h2>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post" action="{% url 'common:user_modify' %}">
+                {% csrf_token %}
+                
+                {% include "form_errors.html" %} 
+
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">이메일</label>
+                    <input type="email" class="form-control" name="email" id="id_email" value="{{ form.email.value|default_if_none:'' }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">이름</label>
+                    <input type="text" class="form-control" name="name" id="id_name" value="{{ form.name.value|default_if_none:'' }}" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_phone" class="form-label">전화번호</label>
+                    <input type="text" class="form-control" name="phone" id="id_phone" value="{{ form.phone.value|default_if_none:'' }}" placeholder="하이픈 없이 숫자만" required>
+                </div>
+                
+                <hr>
+                
+                <h5 class="mt-4 mb-3 text-muted">비밀번호 변경 (선택 사항)</h5>
+                
+                <div class="mb-3">
+                    <label for="id_new_password1" class="form-label">새 비밀번호</label>
+                    <input type="password" class="form-control" name="new_password1" id="id_new_password1">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_new_password2" class="form-label">새 비밀번호 확인</label>
+                    <input type="password" class="form-control" name="new_password2" id="id_new_password2">
+                    {% for error in form.new_password2.errors %}
+                        <div class="alert alert-danger mt-2">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-primary">수정 완료</button>
+                    <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> 수정 취소
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

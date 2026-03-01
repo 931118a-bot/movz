@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container my-5">
+  {% if kw %}
+    {% if not movies %}
+      <div class="text-center mt-5 text-muted">
+        <h4 class="text-danger">검색 결과가 없습니다</h4>
+        <p>다른 검색어로 시도해 보세요.</p>
+      </div>
+    {% else %}
+      {% include "movie/genre_section.html" with movies=movies title=selected_field section_type=selected_field %}
+    {% endif %}
+  {% else %}
+    <div class="text-center mt-5 text-muted">
+      <h4 class="text-danger">검색 결과가 없습니다</h4>
+      <p>검색어를 입력해 주세요</p>
+    </div>
+  {% endif %}
+  <a href="#" onclick="window.history.back(); return false;" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> 돌아가기
+  </a>
+</div>
+
+{% endblock %}

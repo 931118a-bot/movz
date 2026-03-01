@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert-danger">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            
+            <h2 class="text-center mb-4">회원 탈퇴 확인</h2>
+            <p class="text-center text-muted">회원 탈퇴를 위해 비밀번호를 다시 입력해 주세요.</p>
+            
+            <form method="post" action="{% url 'common:usercheck' %}" id="user-check-form">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" name="password" id="password" required>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary" style="background-color: red;">회원 탈퇴</button>
+                    <a href="{% url 'common:userinfo' %}" class="btn btn-secondary">취소(내 정보 확인)</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--<script>
+onclick="confirmDelete()"
+function confirmDelete() {
+    // 1. 브라우저 자체 경고창을 띄워 사용자에게 최종 확인을 요청
+    if (confirm("회원 탈퇴를 진행하시겠습니까? 탈퇴 후 모든 정보는 복구할 수 없습니다.")) {
+        // 2. '확인'을 누르면 폼을 제출하여 비밀번호 확인 및 탈퇴 로직 실행
+        document.getElementById('user-check-form').submit(); 
+    }
+}
+</script>
+-->
+{% endblock %}

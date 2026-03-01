@@ -1,0 +1,179 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* 검색 결과 제목 */
+.movie-director { color: black; word-break: keep-all; }
+.movie-director strong { font-size: 1.6rem; color: black; }
+
+/* 테이블 기본 정렬 */
+.table { table-layout: fixed; border-collapse: collapse; width: 100%; }
+.table tr { height: 160px; } /* 행 높이 고정 */
+.table td { vertical-align: middle;}
+
+/* 포스터 이미지 통일 */
+.poster-img {
+  width: 90px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 0px;
+  margin-top: 10px;
+  margin-bottom: 10px
+
+}
+
+/* 페이징 스타일 */
+.pagination { flex-wrap: wrap; }
+.page-link { color: black; border: 1px solid #ccc; }
+.page-link:hover { color: white; background-color: #6c757d; }
+.page-item.active .page-link { background-color: #6c757d; border-color: #6c757d; }
+
+/* PC(992px 이상) 화면에서만 영화 정보 여백 추가 */
+@media (min-width: 992px) {
+  .table td.movie-info { padding-left: 60px;}
+}
+
+/* 반응형 (태블릿 이하) */
+@media (max-width: 991px) { 
+  .movie-director strong { font-size: 1.3rem; }
+  table { font-size: 0.95rem; }
+  .poster-img { width: 70px; height: 100px; }
+  .table tr { height: 130px; }
+  .table td.movie-info { padding-left: 8px; / }
+}
+
+/* 모바일 (가로폭 768 이하) */
+@media (max-width: 768px) {
+  .movie-director strong { font-size: 1.1rem; }
+  .pagination { justify-content: center; gap: 4px; font-size: 0.9rem; }
+  .page-link { padding: 4px 8px; }
+  .table tr { height: 120px; }
+  .poster-img { width: 60px; height: 85px; }
+  .table-responsive { overflow-x: hidden; }
+}
+
+/* 작은 화면 (480 이하) */
+@media (max-width: 480px) {
+  .movie-director strong { font-size: 1rem; }
+  .page-link { padding: 3px 6px; font-size: 0.85rem; }
+  .movie-title a { font-size: 1rem !important; }
+  .poster-img { width: 65px; height: 90px; margin-top: 15px; margin-bottom: 15px; margin-left: 10;}
+  .table tr { height: 110px; }
+  }
+</style>
+
+<div class="container my-5">
+
+  {% if movies %}
+    <h1 class="fs-3 text-center" style="margin-bottom: 60;"><strong>🔎 "{{ kw }}" 검색 결과</strong></h1>
+    
+      <div class="btn-group" role="group" aria-label="Sort buttons">
+        <a href="?kw={{ kw }}&fields={{ selected_field }}&sort=popular"
+        class="btn btn-outline-secondary {% if sort == 'popular' %}active{% endif %}">추천순</a>
+        <a href="?kw={{ kw }}&fields={{ selected_field }}&sort=latest"
+        class="btn btn-outline-secondary {% if sort == 'latest' %}active{% endif %}">최신순</a>
+      </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr style="height: 0px;">
+            <th style="width: 120px;"></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for movie in movies %}
+          <tr>
+            <!-- 장르 + 포스터 -->
+            <td style="width:140px; text-align:center;">
+              <div class="fw-bold text-dark" style="font-size:1rem;">
+                {{ movie.genre1 }}
+              </div>
+              <a href="{% url 'movie:detail' movie.id %}" style="display:block; text-align:center;">
+                {% if movie.mainphoto %}
+                  <img src="{{ movie.mainphoto.url }}" alt="{{ movie.m_name }}"
+                        class="poster-img">
+                {% else %}
+                  <img src="{% static 'img/no_image.png' %}" alt="no image"
+                       class="poster-img">
+                {% endif %}
+              </a>
+            </td>
+
+            <!-- 영화 정보 -->
+            <td class="movie-info" style="font-size:1rem;">
+              <div class="fw-bold movie-title mb-1" style="font-size:1.3rem;">
+                <a href="{% url 'movie:detail' movie.id %}"
+                   class="text-decoration-none text-dark">
+                   {{ movie.m_name }}
+                </a>
+              </div>
+              <div class="text-dark mb-1">
+                ({{ movie.m_date }}) ♥ {{ movie.vote }}
+              </div>
+              <div class="fw-bold movie-director mt-2" style="font-size:1rem;">
+                {{ movie.director }} <span class="text-dark small">감독</span>
+              </div>
+              <div class="movie-cast mt-1 text-dark" style="font-size:0.95rem;">
+                {{ movie.cast }}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> 
+
+    <!-- 페이징 -->
+    {% if movies.has_other_pages %}
+    <ul class="pagination justify-content-center mt-4">
+
+  {% if movies.has_previous %}
+  <li class="page-item">
+    <a class="page-link"
+       href="?page={{ movies.previous_page_number }}&kw={{ kw }}&fields={{ selected_field }}&sort={{ sort }}">
+       이전
+    </a>
+  </li>
+  {% else %}
+  <li class="page-item disabled"><a class="page-link">이전</a></li>
+  {% endif %}
+
+  {% for num in movies.paginator.page_range %}
+    {% if num >= movies.number|add:-5 and num <= movies.number|add:5 %}
+      {% if num == movies.number %}
+        <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+      {% else %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ num }}&kw={{ kw }}&fields={{ selected_field }}&sort={{ sort }}">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% if movies.has_next %}
+  <li class="page-item">
+    <a class="page-link"
+       href="?page={{ movies.next_page_number }}&kw={{ kw }}&fields={{ selected_field }}&sort={{ sort }}">
+       다음
+    </a>
+  </li>
+  {% else %}
+  <li class="page-item disabled"><a class="page-link">다음</a></li>
+  {% endif %}
+
+</ul>
+    {% endif %}
+
+  {% else %}
+    <div class="text-center mt-5 text-muted">
+      <h4 class="text-danger">검색 결과가 없습니다</h4>
+      <p>다른 검색어로 시도해 보세요.</p>
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,111 @@
+{% load static %}
+
+<style>
+  /* 전체 테이블 기본 정렬 */
+  table.movie-table { width: 100%; table-layout: fixed; border-collapse: collapse;}
+
+  /* 각 셀 중앙 정렬 + 고정 높이 */
+  .movie-table td {text-align: center; vertical-align: middle; height: 160px; padding: 12px;}
+
+  /* 포스터 이미지 크기 통일 */
+  .poster-img {
+    width: 90px;
+    height: 130px;
+    object-fit: cover; 
+    display: block;
+    margin: 0 auto;
+    border-radius: 0; 
+  }
+  .movie-table td{word-break: keep-all; overflow-wrap: break-word;}
+  /* 반응형 - 모바일에서 자연스럽게 축소 */
+  @media (max-width: 992px) {
+    .movie-table td {height: 140px; padding: 8px; font-size: 0.95rem; }
+    .poster-img {width: 70px; height: 100px;}
+    .movie-title a{font-size: 1.05rem; }
+  }
+
+  @media (max-width: 768px) {
+    .movie-table td {height: 120px; font-size: 0.9rem;}
+    .poster-img {width: 60px; height: 90px;}
+    .movie-title a{ font-size: 1rem; }
+  }
+  @media (max-width: 480px) {
+    .movie-table td {height: 110px; padding: 6px; font-size: 0.85rem;}
+    .poster-img {width: 55px; height: 80px;}
+   .movie-title a{ font-size: 0.95rem; }
+  }
+/* 영화 제목이 박스를 벗어나지 않게 */
+.movie-title a{
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;         /* 줄바꿈 허용 */
+  word-break: keep-all;        /* 단어 단위 줄바꿈(한글에 좋음) */
+  overflow-wrap: break-word;   /* 너무 긴 단어는 강제 줄바꿈 */
+  color: black;                /* 항상 검정 */
+  text-decoration: none;
+}
+</style>
+
+<div class="container my-5">
+
+  {% if movies %}
+    <h1 class="mb-5 text-center"><strong>MOVz {{ kw }}</strong></h1>
+
+    <table class="table table-hover align-middle movie-table">
+      <thead class="text-center align-middle">
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for movie in movies %}
+        <tr>
+          <!-- 포스터 -->
+          <td>
+            <a href="{% url 'movie:detail' movie.id %}">
+              {% if movie.mainphoto %}
+                <img src="{{ movie.mainphoto.url }}" alt="{{ movie.m_name }}"
+                     class="poster-img">
+              {% else %}
+                <img src="{% static 'img/no_image.png' %}" alt="no image"
+                     class="poster-img">
+              {% endif %}
+            </a>
+          </td>
+
+          <!-- 영화명 -->
+          <td>
+            <div class="movie-title mb-1">
+              <a href="{% url 'movie:detail' movie.id %}" class="text-decoration-none text-dark fw-bold">
+                {{ movie.m_name }}
+              </a>
+            </div>
+            <div class="text-dark" style="font-size: 15px;">
+              ({{ movie.m_date }})♥{{ movie.vote }}
+            </div>
+          </td>
+
+          <!-- 감독 -->
+          <td>
+            <div style="font-size: 20px;">{{ movie.director }}</div>
+            <div class="text-dark pt-1">감독</div>
+          </td>
+
+          <!-- 출연진 -->
+          <td style="font-size: 18px;">
+            {{ movie.cast }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="text-center mt-5 text-muted">
+      <h4 class="text-danger">검색 결과가 없습니다</h4>
+      <p>다른 검색어로 시도해 보세요.</p>
+    </div>
+  {% endif %}
+</div>
